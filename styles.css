@@ -1,0 +1,188 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; 
+    min-height: 100vh;
+    margin: 0; /* remove scroll bar */
+    background-color: tomato;
+    font-size: 1rem;
+    font-family: monospace;
+}
+
+.container {
+    background-color: honeydew;
+    border-radius: .5rem; 
+    padding: 1rem;
+
+}
+
+#timerContainer {
+    position: absolute;
+    top: 10%;
+    width: 200px;
+    text-align: center;
+}
+
+#quoteContainer {
+    width: 700px;
+}
+
+.timer {
+    font-size: 2rem;
+    color: black;
+    height: 50px;
+}
+
+.button {
+    position: relative;
+    color: honeydew;
+    background-color: tomato;
+    font-family: 'Courier New', Courier, monospace;
+    border-radius: .5rem;
+    cursor: pointer;
+    box-shadow: 3px 3px black;
+}
+
+ button:hover{
+    opacity: 0.7;
+}
+
+.button:active, .activeButton {
+    top: 3px;
+    left: 3px;
+    box-shadow: none !important;
+    background-color: rgb(171, 67, 48);
+}
+
+.quote-display {
+    font-size: 1.55rem;
+    margin-bottom: 1rem;
+    margin-left: calc(1rem + 2px); /* quote-input left padding + border */
+    margin-right: calc(1rem + 2px);
+}
+
+.quote-input {
+    background-color: transparent;
+    border: 2px solid grey;
+    outline: none;
+    width: 100%;
+    height: 3rem;
+    margin: auto;
+    resize: none;
+    padding: .5rem 1rem;
+    font-size: 1rem;
+    border-radius: .5rem;
+}
+
+.quote-input:focus::placeholder {
+    color: transparent;
+  }
+ 
+/* needed for .quote-input {outline: none} */
+.quote-input:focus {
+    border-color: turquoise;
+}
+
+.correct {
+    color: green;
+    font-weight: bold;
+}
+
+.partial {
+    font-weight: bold;
+}
+.incorrect {
+    color: red;
+    text-decoration: line-through;
+    font-weight: bold;
+}
+
+.testing {
+    position: absolute;
+    bottom:50px;
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: 200ms ease-in-out;
+    border: 1px solid black;
+    border-radius: 10px;
+    z-index: 10;
+    background-color: white;
+    width: 730px;
+    max-width: 80%;
+}
+
+.modal.active{
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.modal-header {
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid black;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+#openModal {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    
+}
+
+.close-modal {
+    cursor: pointer;
+    border: none;
+    outline: none;
+    background: none;
+    font-size: 1.25rem;
+    font-weight: bold;
+}   
+
+.modal-body {
+    padding: 10px 15px;
+}
+
+.button-container {
+    padding: 1rem;
+}
+
+.katakana {
+    background-color: crimson;
+}
+
+.katakana.activeButton {
+    background-color: rgb(102, 10, 28);
+}
+
+#overlay {
+    position: fixed;
+    opacity: 0;
+    transition: 200ms ease-in-out;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .5);
+    pointer-events: none;
+}
+
+#overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}

@@ -1,0 +1,60 @@
+<!-- https://www.youtube.com/watch?v=R-7eQIHRszQ&ab_channel=WebDevSimplified -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+    <title>Kana Practice</title>
+</head>
+<body>
+    <div class="container" id="timerContainer">
+    <div class="timer" id="timer">0:00.000</div>
+    <button class="button" id="start">start</button>
+    <button class="button" id="hideTimer">hide timer</button>
+    </div>
+
+    <div class="container" id="quoteContainer">
+        <div class="quote-display" id="quoteDisplay">press start</div>
+        <textarea id="quoteInput" class="quote-input" placeholder="Type here..." autofocus></textarea>
+        <div class="completed" id="completed"></div>
+    </div>
+    
+    <button class="button" data-modal-target=#modal id="openModal">Settings</button>
+
+    <div class="modal" id="modal">
+
+        <div class="modal-header">
+            <div class="modal-title">Settings</div>
+            <button class="close-modal" id="closeModal">&times;</button>
+        </div>
+
+        <div class="modal-body">
+
+            <div class="button-container" id="kanaNumberContainer"> 
+                Number of Kana 
+                <button class="button kana-number" id="Kana25">25</button>
+                <button class="button kana-number" id="Kana50">50</button>
+                <button class="button kana-number" id="Kana100">100</button>
+            </div>
+
+            <div class="button-container" id="kanaTypeContainer"> 
+                Kana Type
+                <button class="button kana-type hiragana" id="hiraganaType">hiragana</button>
+                <!-- <button class="button kana-type hiragana" id="hdakutenType">dakuten</button> -->
+                <!-- <button class="button kana-type hiragana inactive" id="hcombType">combination</button> -->
+                <button class="button kana-type katakana" id="katakanaType">katakana</button>
+                <!-- <button class="button kana-type katakana" id="kdakutenType">dakuten</button> -->
+                <!-- <button class="button kana-type katakana inactive" id="kcombType">combination</button> -->
+            </div>
+        </div>
+    </div>
+
+    <div class= "testing" id="testing">test</div>
+
+    <div id="overlay"></div>
+
+</body>
+</html>
