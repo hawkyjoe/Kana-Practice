@@ -46,6 +46,7 @@ body {
     border-radius: .5rem;
     cursor: pointer;
     box-shadow: 3px 3px black;
+    margin: 0.3rem 0rem;
 }
 
  button:hover{
@@ -116,7 +117,7 @@ body {
     border: 1px solid black;
     border-radius: 10px;
     z-index: 10;
-    background-color: white;
+    background-color: honeydew;
     width: 730px;
     max-width: 80%;
 }

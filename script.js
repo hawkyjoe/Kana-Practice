@@ -1,12 +1,11 @@
-
 const quote = [] 
 const rquote = [] 
 const quoteDisplayElement = document.getElementById("quoteDisplay")
 const quoteInputElement = document.getElementById("quoteInput")
 const timerElement = document.getElementById("timer")
 const hideTimerButton = document.getElementById("hideTimer")
-const hiragana = [
-    "あ", "い", "う", "え", "お", 
+const hiragana = [ 
+    "あ", "い", "う", "え", "お",  
     "か", "き", "く", "け", "こ",
     "さ", "し", "す", "せ", "そ", 
     "た", "ち", "つ", "て", "と", 
@@ -44,6 +43,27 @@ const kdakuten = [
     "パ", "ピ", "プ", "ペ", "ポ",
     "ヴ"
 ]
+const hcomb = [
+    "きゃ", "きゅ", "きょ", "ぎゃ", "ぎゅ", "ぎょ",
+    "しゃ", "しゅ", "しょ", "じゃ", "じゅ","じょ",
+    "ちゃ", "ちゅ", "ちょ", "ぢゃ", "ぢゅ", "ぢょ", 
+    "にゃ", "にゅ", "にょ", "ひゃ", "ひゅ", "ひょ", 
+    "びゃ", "びゅ", "びょ", "ぴゃ", "ぴゅ", "ぴょ",
+    "みゃ", "みゅ", "みょ", "りゃ", "りゅ", "りょ",
+]
+const kcomb = [
+    "キャ", "キュ", "キョ", "ギャ", "ギュ", "ギョ",
+    "シャ", "シュ", "ショ", "ジャ", "ジュ","ジョ",
+    "チャ", "チュ", "チョ", "ヂャ", "ヂュ", "ヂョ", 
+    "ニャ", "ニュ", "ニョ", "ヒャ", "ヒュ", "ヒョ", 
+    "ビャ", "ビュ", "ビョ", "ピャ", "ピュ", "ピョ",
+    "ミャ", "ミュ", "ミョ", "リャ", "リュ", "リョ",
+    "ヴァ", "ヴィ", "ヴェ", "ヴォ",
+    "ウィ", "ウェ", "ウォ",
+    "ファ", "フィ", "フェ", "フォ",
+    "ツァ", "ツィ", "ツェ", "ツォ",
+    "シェ", "ジェ", "チェ", "トゥ","ティ", "ドゥ", "ディ", 
+]
 const exceptions = ["じ", "ぢ", "づ"
 ]
 const romanized = [
@@ -61,25 +81,39 @@ const romanized = [
 const rdakuten = [
     "ga", "gi", "gu", "ge", "go",
     "za", "ji", "zu", "ze", "zo", 
-    "da", "zi", "zu", "de", "do", 
+    "da", "ji", "zu", "de", "do", 
     "ba", "bi", "bu", "be", "bo",
     "pa", "pi", "pu", "pe", "po",
     "vu"
 ]
-
+const rcomb = [
+    "kya", "kyu", "kyo", "gya", "gyu", "gyo",
+    "sha", "shu", "sho", "jya", "jyu","jyo",
+    "cha", "chu", "cho", "jya", "jyu", "jyo",
+    "nya", "nyu", "nyo", "hya", "hyu", "hyo",
+    "bya", "byu", "byo", "pya", "pyu", "pyo",
+    "mya", "myu", "myo", "rya", "ryu", "ryo",
+    "va", "vi", "ve", "vo",
+    "wi", "we", "wo",
+    "fa", "fi", "fe", "fo",
+    "tsa", "tsi", "tse", "tso",
+    "she", "je", "che", "twu","ti", "dwu", "di", 
+]
 let hiraType = true
 let kataType = false
 let hdakuType = false
 let kdakuType = false
+let hcombType = false
+let kcombType = false
 
 const kanaArray = []
-const dakuArray = []
+const romanizedArray = []
 let kanaAmount = 25
 
 let timerHidden = false
 let currentTime = "0:00.000"
 let startTime = null
-let interval = null // stops timer from running multiple intervals with multiple starts
+let interval = null
 
 const openModalButton = document.getElementById("openModal")
 const closeModalButton = document.getElementById("closeModal")
@@ -120,9 +154,10 @@ function randomizeKana() {
     quote.splice(0, quote.length) //empty quote
     rquote.splice(0, rquote.length)
     for (let i = 0; i < kanaAmount; i++) {
-        index = Math.floor(Math.random() * kanaArray.length)
-        quote.push(kanaArray[index])
-        rquote.push(romanized[index % 46]) 
+        const arrayNumber = Math.floor(Math.random() * kanaArray.length)
+        index = Math.floor(Math.random() * kanaArray[arrayNumber].length)
+        quote.push(kanaArray[arrayNumber][index])
+        rquote.push(romanizedArray[arrayNumber][index]) 
     }
     test.innerText = rquote
 }
@@ -175,6 +210,86 @@ function renderNewQuote() {
     })
 }
 
+function displayKanaNumber() {
+    if (kanaAmount == 25) {
+        document.getElementById("Kana25").classList.add("activeButton")
+        document.getElementById("Kana50").classList.remove("activeButton")
+        document.getElementById("Kana100").classList.remove("activeButton")
+    } else if (kanaAmount == 50) {
+        document.getElementById("Kana25").classList.remove("activeButton")
+        document.getElementById("Kana50").classList.add("activeButton")
+        document.getElementById("Kana100").classList.remove("activeButton")
+    } else {
+        document.getElementById("Kana25").classList.remove("activeButton")
+        document.getElementById("Kana50").classList.remove("activeButton")
+        document.getElementById("Kana100").classList.add("activeButton")
+    }
+}   
+
+function SetKanaType() { 
+    kanaArray.splice(0, kanaArray.length) 
+    romanizedArray.splice(0, romanizedArray.length)
+    if (hiraType) {
+        document.getElementById("hiraganaType").classList.add("activeButton")
+        kanaArray.push(hiragana)
+        romanizedArray.push(romanized)
+    } if (kataType) {
+        document.getElementById("katakanaType").classList.add("activeButton")
+        kanaArray.push(katakana)
+        romanizedArray.push(romanized)
+    } if (hdakuType) {
+        document.getElementById("hdakutenType").classList.add("activeButton")
+        kanaArray.push(hdakuten)
+        romanizedArray.push(rdakuten)
+    } if (kdakuType) {
+        document.getElementById("kdakutenType").classList.add("activeButton")
+        kanaArray.push(kdakuten)
+        romanizedArray.push(rdakuten)
+    } if (hcombType) {
+        document.getElementById("hcombType").classList.add("activeButton")
+        kanaArray.push(hcomb)
+        romanizedArray.push(rcomb)
+    } if (kcombType) {
+        document.getElementById("kcombType").classList.add("activeButton")
+        kanaArray.push(kcomb)
+        romanizedArray.push(rcomb)
+    }  
+    
+    console.log(`kanaArray:${kanaArray}`, kanaArray)
+    console.log(`romanizedArray:${romanizedArray}`, romanizedArray)
+}
+
+const kanaNumber = document.getElementById("kanaNumberContainer") 
+kanaNumber.addEventListener("click", function(event) {
+    if (event.target.nodeName == "BUTTON") {
+        kanaAmount = Number(event.target.id.replace("Kana", ""))
+        displayKanaNumber()
+    }
+})
+
+const kanaType = document.getElementById("kanaTypeContainer")
+kanaType.addEventListener("click", function(event) {
+    if (event.target.nodeName == "BUTTON") {
+        if ((event.target.classList.contains("activeButton"))&&(document.querySelectorAll(".kana-type.activeButton").length == 1)){
+            return
+        }
+        event.target.classList.toggle("activeButton")
+        if (event.target.id == "hiraganaType") {
+            hiraType = !hiraType
+        } else if (event.target.id == "katakanaType") {
+            kataType = !kataType
+        } else if (event.target.id == "hdakutenType") {
+            hdakuType = !hdakuType
+        } else if (event.target.id == "kdakutenType") {
+            kdakuType = !kdakuType
+        } else if (event.target.id == "hcombType") {
+            hcombType = !hcombType
+        } else if (event.target.id == "kcombType") {
+            kcombType = !kcombType
+        }
+    } 
+    SetKanaType()
+})
 //Timer 
 function startTimer() {
     if (interval) {
@@ -204,46 +319,9 @@ function timerMilli(startTime) {
 
 function stopTimer() {
     clearInterval(interval)
-    interval = null
     return timerElement.innerText.replace(":", " ").replace(".", " ").split(" ")
 }
 
-//Buttons 
-function displayKanaNumber() {
-    if (kanaAmount == 25) {
-        document.getElementById("Kana25").classList.add("activeButton")
-        document.getElementById("Kana50").classList.remove("activeButton")
-        document.getElementById("Kana100").classList.remove("activeButton")
-    } else if (kanaAmount == 50) {
-        document.getElementById("Kana25").classList.remove("activeButton")
-        document.getElementById("Kana50").classList.add("activeButton")
-        document.getElementById("Kana100").classList.remove("activeButton")
-    } else {
-        document.getElementById("Kana25").classList.remove("activeButton")
-        document.getElementById("Kana50").classList.remove("activeButton")
-        document.getElementById("Kana100").classList.add("activeButton")
-    }
-}   
-
-function SetKanaType() { 
-    kanaArray.splice(0, kanaArray.length) 
-    if (hiraType) {
-        console.log("hiratype")
-        document.getElementById("hiraganaType").classList.add("activeButton")
-        kanaArray.push(...hiragana)
-    } if (kataType) {
-        document.getElementById("katakanaType").classList.add("activeButton")
-        kanaArray.push(...katakana)
-    // } if (hdakuType) {
-    //     document.getElementById("hdakutenType").classList.add("activeButton")
-    //     dakuArray.push(...hdakuten)
-    // } if (hdakuType) {
-    //     document.getElementById("kdakutenType").classList.add("activeButton")
-    //     dakuArray.push(...kdakuten)
-    } console.log(kanaArray)
-}
-
-    
 document.getElementById("start").addEventListener("click", ()=> {
     startTimer()
     document.getElementById("completed").innerText = "" 
@@ -263,36 +341,6 @@ hideTimerButton.addEventListener("click", function() {
         hideTimerButton.classList.toggle("activeButton")
         timerElement.style.transform  = "rotate(90deg)"
         hideTimerButton.innerText = "show timer"
-    }
-})
-
-const kanaNumber = document.getElementById("kanaNumberContainer") 
-kanaNumber.addEventListener("click", function(event) {
-    if (event.target.nodeName == "BUTTON") {
-        kanaAmount = Number(event.target.id.replace("Kana", ""))
-        displayKanaNumber()
-    }
-})
-
-const kanaType = document.getElementById("kanaTypeContainer")
-kanaType.addEventListener("click", function(event) {
-    if (event.target.nodeName == "BUTTON") {
-        if ((event.target.classList.contains("activeButton"))&&(document.querySelectorAll(".kana-type.activeButton").length == 1)){
-            return
-        }
-        event.target.classList.toggle("activeButton")
-        if (event.target.id == "hiraganaType") {
-            hiraType = !hiraType
-        } else if (event.target.id == "katakanaType") {
-            kataType = !kataType
-    } 
-        // else if (event.target.id == "hdakutenType") {
-        //     hdakuType = !hdakuType
-        // }else if (event.target.id == "kdakutenType") {
-        //     kdakuType = !kdakuType
-        // }
-
-    SetKanaType()
     }
 })
 
