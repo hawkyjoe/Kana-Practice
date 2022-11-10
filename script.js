@@ -106,9 +106,13 @@ let kdakuType = false
 let hcombType = false
 let kcombType = false
 
+let includeMistakes = false
+
 const kanaArray = []
 const romanizedArray = []
 let kanaAmount = 25
+const incorrectArray = []
+const rincorrectArray = []
 
 let timerHidden = false
 let currentTime = "0:00.000"
@@ -153,13 +157,35 @@ function closeModal(modal) {
 function randomizeKana() {
     quote.splice(0, quote.length) //empty quote
     rquote.splice(0, rquote.length)
-    for (let i = 0; i < kanaAmount; i++) {
+    let quoteLength = kanaAmount
+    if (includeMistakes) {
+        quoteLength = kanaAmount-incorrectArray.length
+    }
+    for (let i = 0; i < quoteLength; i++) {
         const arrayNumber = Math.floor(Math.random() * kanaArray.length)
         index = Math.floor(Math.random() * kanaArray[arrayNumber].length)
         quote.push(kanaArray[arrayNumber][index])
         rquote.push(romanizedArray[arrayNumber][index]) 
     }
+    if (includeMistakes) {
+        quote.push(...incorrectArray)
+        rquote.push(...rincorrectArray)
+        fisherYatesShuffle(quote, rquote)
+    }
     test.innerText = rquote
+}
+
+function fisherYatesShuffle(array, array2) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        const x = array[i]
+        array[i] = array[j]
+        array[j] = x
+
+        const y = array2[i]
+        array2[i] = array2[j]
+        array2[j] = y
+    }
 }
 
 quoteInputElement.addEventListener("input", () => {
@@ -187,6 +213,11 @@ quoteInputElement.addEventListener("input", () => {
             characterSpan.classList.remove("partial")
             characterSpan.classList.add("incorrect")
             correct = false
+            if (!(incorrectArray.includes(quote[index]))){
+                incorrectArray.push(quote[index])
+                rincorrectArray.push(rquote[index])
+                document.getElementById("mistakes").innerText = incorrectArray
+            }
         }
     })
     if (correct) { // todo
@@ -267,8 +298,7 @@ kanaNumber.addEventListener("click", function(event) {
     }
 })
 
-const kanaType = document.getElementById("kanaTypeContainer")
-kanaType.addEventListener("click", function(event) {
+document.getElementById("kanaTypeContainer").addEventListener("click", function(event) {
     if (event.target.nodeName == "BUTTON") {
         if ((event.target.classList.contains("activeButton"))&&(document.querySelectorAll(".kana-type.activeButton").length == 1)){
             return
@@ -290,6 +320,7 @@ kanaType.addEventListener("click", function(event) {
     } 
     SetKanaType()
 })
+
 //Timer 
 function startTimer() {
     if (interval) {
@@ -324,8 +355,13 @@ function stopTimer() {
 
 document.getElementById("start").addEventListener("click", ()=> {
     startTimer()
-    document.getElementById("completed").innerText = "" 
     renderNewQuote()
+    if (document.getElementById("clearMistakes").classList.contains("activeButton")) {
+        incorrectArray.splice(0, incorrectArray.length)
+        rincorrectArray.splice(0, incorrectArray.length)
+        document.getElementById("mistakes").innerText = incorrectArray
+        document.getElementById("completed").innerText = "" 
+    }
 })
 
 hideTimerButton.addEventListener("click", function() {
@@ -344,8 +380,28 @@ hideTimerButton.addEventListener("click", function() {
     }
 })
 
+//Mistakes
+document.getElementById("mistakesContainer").addEventListener("click", function(event) {
+    if (event.target.nodeName == "BUTTON") {
+        if (event.target.id == "includeMistakes") {
+            event.target.classList.toggle("activeButton")
+            includeMistakes = !includeMistakes
+        } else if (event.target.id == "clearMistakes") {
+            if (!(event.target.classList.contains("activeButton"))) {
+                event.target.classList.toggle("activeButton")
+                event.target.innerText = "autoclear"
+                incorrectArray.splice(0, incorrectArray.length)
+                rincorrectArray.splice(0, incorrectArray.length)
+                document.getElementById("mistakes").innerText = incorrectArray
+            } else {
+                event.target.classList.toggle("activeButton")
+                event.target.innerText = "clear"
+            }
+            
+        }
+    } 
+})
+
+
 SetKanaType()
 displayKanaNumber()
-
-
-    
