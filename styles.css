@@ -9,7 +9,7 @@ body {
     align-items: center; 
     min-height: 100vh;
     margin: 0; /* remove scroll bar */
-    background-color: tomato; 
+    background-color: tomato;
     font-size: 1rem;
     font-family: monospace;
 }
@@ -40,7 +40,7 @@ body {
 
 .button {
     position: relative;
-    color: white;
+    color: honeydew;
     background-color: tomato;
     font-family: 'Courier New', Courier, monospace;
     border-radius: .5rem;

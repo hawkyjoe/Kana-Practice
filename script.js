@@ -225,6 +225,8 @@ quoteInputElement.addEventListener("input", () => {
         if (!timerHidden) {
             document.getElementById("completed").innerText = `completed in ${time[0]}:${time[1]}.${time[2]} ` +
             `(${Math.round(kanaAmount/((time[0] + time[1])/60)*100)/100} kpm)`
+        } else {
+            document.getElementById("completed").innerText = "completed"
         }
     }
 })
@@ -356,11 +358,12 @@ function stopTimer() {
 document.getElementById("start").addEventListener("click", ()=> {
     startTimer()
     renderNewQuote()
+    document.getElementById("completed").innerText = "" 
     if (document.getElementById("clearMistakes").classList.contains("activeButton")) {
         incorrectArray.splice(0, incorrectArray.length)
         rincorrectArray.splice(0, incorrectArray.length)
         document.getElementById("mistakes").innerText = incorrectArray
-        document.getElementById("completed").innerText = "" 
+        
     }
 })
 
@@ -401,7 +404,6 @@ document.getElementById("mistakesContainer").addEventListener("click", function(
         }
     } 
 })
-
 
 SetKanaType()
 displayKanaNumber()
