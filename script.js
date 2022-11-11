@@ -107,6 +107,7 @@ let hcombType = false
 let kcombType = false
 
 let includeMistakes = false
+let altStyle = true
 
 const kanaArray = []
 const romanizedArray = []
@@ -220,11 +221,12 @@ quoteInputElement.addEventListener("input", () => {
             }
         }
     })
-    if (correct) { // todo
+    if (correct) { 
         const time = stopTimer()
+        const timeNum = time.map(Number)
         if (!timerHidden) {
-            document.getElementById("completed").innerText = `completed in ${time[0]}:${time[1]}.${time[2]} ` +
-            `(${Math.round(kanaAmount/((time[0] + time[1])/60)*100)/100} kpm)`
+            document.getElementById("completed").innerText = `completed in ${time[0]}:${time[1]}.${time[2]}, ` +
+            `${Math.round(kanaAmount/((timeNum[0] * 60 + timeNum[1])/60)*100)/100}kpm`
         } else {
             document.getElementById("completed").innerText = "completed"
         }
@@ -405,5 +407,26 @@ document.getElementById("mistakesContainer").addEventListener("click", function(
     } 
 })
 
+
+document.getElementById("alternateStyle").addEventListener("click", function() {
+    document.getElementById("alternateStyle").classList.toggle("activeButton")
+    altStyle = !altStyle
+    style()
+})
+
+function style() {
+    if (altStyle) {
+        document.getElementById("alternateStyle").classList.add("activeButton")
+        document.getElementsByTagName("body")[0].style.backgroundColor = "midnightblue";
+        document.getElementById("mistakes").style.color = "white";
+        document.getElementById("testing").style.color = "white";
+    } else {
+        document.getElementsByTagName("body")[0].style.backgroundColor = "tomato";
+        document.getElementById("mistakes").style.color = "black";
+        document.getElementById("testing").style.color = "black";
+    }
+}
+
 SetKanaType()
 displayKanaNumber()
+style()

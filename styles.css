@@ -177,6 +177,10 @@ body {
     background-color: rgb(102, 10, 28);
 }
 
+#alternateStyle {
+    background-color: midnightblue;
+}
+
 #overlay {
     position: fixed;
     opacity: 0;
