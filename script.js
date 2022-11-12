@@ -173,7 +173,7 @@ function randomizeKana() {
         rquote.push(...rincorrectArray)
         fisherYatesShuffle(quote, rquote)
     }
-    test.innerText = rquote
+    test.innerText = rquote.toString().replaceAll(",", " ")
 }
 
 function fisherYatesShuffle(array, array2) {
@@ -224,17 +224,32 @@ quoteInputElement.addEventListener("input", () => {
     if (correct) { 
         const time = stopTimer()
         const timeNum = time.map(Number)
+        quoteInputElement.blur()
         if (!timerHidden) {
             document.getElementById("completed").innerText = `completed in ${time[0]}:${time[1]}.${time[2]}, ` +
             `${Math.round(kanaAmount/((timeNum[0] * 60 + timeNum[1])/60)*100)/100}kpm`
         } else {
             document.getElementById("completed").innerText = "completed"
         }
+        enterToRestart()
     }
 })
 
+function restartIfEnter (e) { // needs to be named function for removeEventListener
+    console.log(e)
+    if (e.key == "Enter") {
+        restart()
+    }
+}
+
+function enterToRestart() {
+    console.log("enterToRestart")
+    document.addEventListener("keyup", restartIfEnter) //keypress makes key be recorded in input regardless of where .focus() is ??
+}
+
 function renderNewQuote() {
     quoteDisplayElement.innerHTML = "" // clear out old quote/input
+    quoteInputElement.focus()
     quoteInputElement.value = null 
     randomizeKana()
     quote.forEach(character => {
@@ -357,7 +372,8 @@ function stopTimer() {
     return timerElement.innerText.replace(":", " ").replace(".", " ").split(" ")
 }
 
-document.getElementById("start").addEventListener("click", ()=> {
+function restart() {
+    document.removeEventListener("keyup", restartIfEnter)
     startTimer()
     renderNewQuote()
     document.getElementById("completed").innerText = "" 
@@ -365,8 +381,12 @@ document.getElementById("start").addEventListener("click", ()=> {
         incorrectArray.splice(0, incorrectArray.length)
         rincorrectArray.splice(0, incorrectArray.length)
         document.getElementById("mistakes").innerText = incorrectArray
-        
     }
+    
+        
+}
+document.getElementById("start").addEventListener("click", ()=> {
+        restart()
 })
 
 hideTimerButton.addEventListener("click", function() {
@@ -407,7 +427,7 @@ document.getElementById("mistakesContainer").addEventListener("click", function(
     } 
 })
 
-
+//Other
 document.getElementById("alternateStyle").addEventListener("click", function() {
     document.getElementById("alternateStyle").classList.toggle("activeButton")
     altStyle = !altStyle
