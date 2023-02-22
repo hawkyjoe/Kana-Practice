@@ -1,4 +1,3 @@
-<!-- https://www.youtube.com/watch?v=R-7eQIHRszQ&ab_channel=WebDevSimplified -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
     <script src="script.js" defer></script>
+
     <title>Kana Practice</title>
 </head>
 <body>
@@ -18,17 +18,17 @@
 
     <div class="container" id="quoteContainer">
         <div class="quote-display" id="quoteDisplay">press start</div>
-        <textarea id="quoteInput" class="quote-input" placeholder="Type here..." autofocus></textarea>
+        <textarea class="quote-input" id="quoteInput" placeholder="Type here..." autofocus></textarea>
         <div class="completed" id="completed"></div>
     </div>
     
-    <button class="button" data-modal-target=#modal id="openModal">Settings</button>
+    <button class="button" id="openModal">Settings</button>
 
     <div class="modal" id="modal">
 
-        <div class="modal-header">
-            <div class="modal-title">Settings</div>
-            <button class="close-modal" id="closeModal">&times;</button>
+        <div id="modalHeader">
+            <div id="modalTitle">Settings</div>
+            <button id="closeModal">&times;</button>
         </div>
 
         <div class="modal-body">
@@ -38,6 +38,7 @@
                 <button class="button kana-number" id="Kana25">25</button>
                 <button class="button kana-number" id="Kana50">50</button>
                 <button class="button kana-number" id="Kana100">100</button>
+                <button class="button kana-number" id="KanaInfin">∞</button>
             </div>
 
             <div class="button-container" id="kanaTypeContainer"> 
@@ -60,7 +61,7 @@
     <div class="mistakes-container" id="mistakesContainer"> 
         <div class= "mistakes" id="mistakes">mistakes</div>
         <button class="button" id="includeMistakes">include mistakes</button>
-        <button class="button" id="clearMistakes">clear</button>
+        <button class="button" id="clearMistakes">autoclear</button>
     </div>
 
     <div class= "testing" id="testing">test</div>

@@ -1,9 +1,54 @@
-const quote = [] 
-const rquote = [] 
-const quoteDisplayElement = document.getElementById("quoteDisplay")
-const quoteInputElement = document.getElementById("quoteInput")
+/* Timer */
 const timerElement = document.getElementById("timer")
 const hideTimerButton = document.getElementById("hideTimer")
+let timerHidden = false
+let interval 
+
+function startTimer() {
+    if (interval) {
+        clearInterval(interval)
+    }
+    let startTime = new Date()
+    interval = setInterval(function () {
+        if (timerHidden) {
+            return
+        }
+        let timeMilli = new Date() - startTime
+        let milliseconds = timeMilli % 1000
+        let seconds = Math.floor(timeMilli/1000) % 60
+        let minutes = Math.floor(timeMilli/60000)
+        if (milliseconds.toString.length < 3){
+            milliseconds = "0".repeat(3 - milliseconds.toString().length) + milliseconds
+        }
+        if (seconds.toString.length < 2){
+            seconds = "0".repeat(2 - seconds.toString().length) + seconds
+        }
+        timerElement.innerText = `${minutes}:${seconds}.${milliseconds}`
+    }, 10)
+}
+
+function stopTimer() {
+    clearInterval(interval)
+    return timerElement.innerText.replace(":", " ").replace(".", " ").split(" ")
+}
+
+function hideTimerListener () {
+    document.getElementById("hideTimer").addEventListener("click", function() {
+        timerHidden = !timerHidden
+        if (hideTimerButton.classList.contains("activeButton")) {
+            hideTimerButton.innerText = "hide timer"
+            timerElement.style.transform  = "none"
+            timerElement.innerText = "0:00.000"
+        } else {
+            hideTimerButton.innerText = "show timer"
+            timerElement.style.transform  = "rotate(90deg)"
+            timerElement.innerText = ":)"
+        }
+        hideTimerButton.classList.toggle("activeButton")
+    })
+}
+
+/* Characters */
 const hiragana = [ 
     "あ", "い", "う", "え", "お",  
     "か", "き", "く", "け", "こ",
@@ -28,6 +73,18 @@ const katakana = [
     "ラ", "リ", "ル", "レ", "ロ",
     "ワ", "ヲ", "ン"
 ]
+const romanized = [
+    "a", "i", "u", "e", "o", 
+    "ka", "ki", "ku", "ke", "ko",
+    "sa", "shi", "su", "se", "so", 
+    "ta", "chi", "tsu", "te", "to", 
+    "na", "ni", "nu", "ne", "no",
+    "ha", "hi", "fu", "he", "ho",
+    "ma", "mi", "mu", "me", "mo",
+    "ya", "yu", "yo",
+    "ra", "ri", "ru", "re", "ro",
+    "wa", "wo", "n"
+]
 const hdakuten = [
     "が", "ぎ", "ぐ", "げ", "ご", 
     "ざ", "じ", "ず", "ぜ", "ぞ",
@@ -42,6 +99,14 @@ const kdakuten = [
     "バ", "ビ", "ブ", "ベ", "ボ", 
     "パ", "ピ", "プ", "ペ", "ポ",
     "ヴ"
+]
+const rdakuten = [
+    "ga", "gi", "gu", "ge", "go",
+    "za", "ji", "zu", "ze", "zo", 
+    "da", "ji", "zu", "de", "do", 
+    "ba", "bi", "bu", "be", "bo",
+    "pa", "pi", "pu", "pe", "po",
+    "vu"
 ]
 const hcomb = [
     "きゃ", "きゅ", "きょ", "ぎゃ", "ぎゅ", "ぎょ",
@@ -64,28 +129,6 @@ const kcomb = [
     "ツァ", "ツィ", "ツェ", "ツォ",
     "シェ", "ジェ", "チェ", "トゥ","ティ", "ドゥ", "ディ", 
 ]
-const exceptions = ["じ", "ぢ", "づ"
-]
-const romanized = [
-    "a", "i", "u", "e", "o", 
-    "ka", "ki", "ku", "ke", "ko",
-    "sa", "shi", "su", "se", "so", 
-    "ta", "chi", "tsu", "te", "to", 
-    "na", "ni", "nu", "ne", "no",
-    "ha", "hi", "fu", "he", "ho",
-    "ma", "mi", "mu", "me", "mo",
-    "ya", "yu", "yo",
-    "ra", "ri", "ru", "re", "ro",
-    "wa", "wo", "n"
-]
-const rdakuten = [
-    "ga", "gi", "gu", "ge", "go",
-    "za", "ji", "zu", "ze", "zo", 
-    "da", "ji", "zu", "de", "do", 
-    "ba", "bi", "bu", "be", "bo",
-    "pa", "pi", "pu", "pe", "po",
-    "vu"
-]
 const rcomb = [
     "kya", "kyu", "kyo", "gya", "gyu", "gyo",
     "sha", "shu", "sho", "jya", "jyu","jyo",
@@ -99,62 +142,18 @@ const rcomb = [
     "tsa", "tsi", "tse", "tso",
     "she", "je", "che", "twu","ti", "dwu", "di", 
 ]
-let hiraType = true
-let kataType = false
-let hdakuType = false
-let kdakuType = false
-let hcombType = false
-let kcombType = false
-
-let includeMistakes = false
-let altStyle = true
-
-const kanaArray = []
-const romanizedArray = []
-let kanaAmount = 25
-const incorrectArray = []
-const rincorrectArray = []
-
-let timerHidden = false
-let currentTime = "0:00.000"
-let startTime = null
-let interval = null
-
-const openModalButton = document.getElementById("openModal")
-const closeModalButton = document.getElementById("closeModal")
-const overlay = document.getElementById("overlay")
-
-const test = document.getElementById("testing") //testing
-
-//Modal
-openModalButton.addEventListener("click", function(){
-    const modal = document.querySelector(openModalButton.dataset.modalTarget)
-    openModal(modal)
-})
-
-closeModalButton.addEventListener("click", function(){
-    const modal = closeModalButton.closest(".modal")
-    closeModal(modal)
-})
-
-overlay.addEventListener("click", function(){
-    const modal = closeModalButton.closest(".modal")
-    closeModal(modal)
-})
-
-function openModal(modal) {
-    modal.classList.add("active")
-    overlay.classList.add("active")
-    openModalButton.classList.add("activeButton")
-}
-
-function closeModal(modal) {
-    modal.classList.remove("active")
-    overlay.classList.remove("active")
-    openModalButton.classList.remove("activeButton")
-}
 
 //Quote Generation
+const quote = [] 
+const rquote = [] 
+let kanaAmount = 25
+const kanaArray = []
+const romanizedArray = []
+const quoteDisplayElement = document.getElementById("quoteDisplay")
+const quoteInputElement = document.getElementById("quoteInput")
+const infinrquote = []
+const infinquote = []
+
 function randomizeKana() {
     quote.splice(0, quote.length) //empty quote
     rquote.splice(0, rquote.length)
@@ -164,47 +163,59 @@ function randomizeKana() {
     }
     for (let i = 0; i < quoteLength; i++) {
         const arrayNumber = Math.floor(Math.random() * kanaArray.length)
-        index = Math.floor(Math.random() * kanaArray[arrayNumber].length)
+        const index = Math.floor(Math.random() * kanaArray[arrayNumber].length)
         quote.push(kanaArray[arrayNumber][index])
         rquote.push(romanizedArray[arrayNumber][index]) 
     }
     if (includeMistakes) {
-        quote.push(...incorrectArray)
-        rquote.push(...rincorrectArray)
-        fisherYatesShuffle(quote, rquote)
+        addMistakesToQuote()
+    }  
+    if (infinite) {
+        infinrquote.push(...rquote)
+        infinquote.push(...quote)
+        if (kanaAmount == 75) {
+            document.getElementById("testing").innerText = infinrquote.slice(infinrquote.length - 75, infinrquote.length - 50).toString().replaceAll(",", " ")
+        } else {
+            document.getElementById("testing").innerText = infinrquote.slice(infinrquote.length - 50, infinrquote.length - 25).toString().replaceAll(",", " ")
+
+        }
+    } else {
+        document.getElementById("testing").innerText = rquote.toString().replaceAll(",", " ")
     }
-    test.innerText = rquote.toString().replaceAll(",", " ")
 }
 
-function fisherYatesShuffle(array, array2) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1))
-        const x = array[i]
-        array[i] = array[j]
-        array[j] = x
-
-        const y = array2[i]
-        array2[i] = array2[j]
-        array2[j] = y
-    }
+function renderNewQuote() {
+    quote.forEach(character => {
+        const characterSpan = document.createElement("span")
+        characterSpan.innerText = character
+        quoteDisplayElement.appendChild(characterSpan)
+    })
 }
 
 quoteInputElement.addEventListener("input", () => {
+    let romanized = rquote
+    let character = quote
     const arrayQuote = quoteDisplayElement.querySelectorAll("span")
     const arrayInput = quoteInputElement.value.split(" ")
     let correct = true
+    let correctNo = 0
+    if (infinite) {
+        romanized = infinrquote
+        character = infinquote
+    }
     arrayQuote.forEach((characterSpan, index) => {
         const splitInput = arrayInput[index]
-        if ((splitInput == null) || (splitInput == "")) {
+        if ((splitInput == null) || (splitInput === "")) {
             characterSpan.classList.remove("correct")
             characterSpan.classList.remove("partial")
             characterSpan.classList.remove("incorrect")
             correct = false
-        } else if (splitInput == rquote[index]) {
+        } else if (splitInput === romanized[index]) {
             characterSpan.classList.add("correct")
             characterSpan.classList.remove("partial")
             characterSpan.classList.remove("incorrect")
-        } else if (rquote[index].startsWith(splitInput)) {
+            correctNo += 1
+        } else if (romanized[index].startsWith(splitInput)) {
             characterSpan.classList.remove("correct")
             characterSpan.classList.add("partial")
             characterSpan.classList.remove("incorrect")
@@ -214,67 +225,157 @@ quoteInputElement.addEventListener("input", () => {
             characterSpan.classList.remove("partial")
             characterSpan.classList.add("incorrect")
             correct = false
-            if (!(incorrectArray.includes(quote[index]))){
-                incorrectArray.push(quote[index])
-                rincorrectArray.push(rquote[index])
+            if (!(incorrectArray.includes(character[index]))){
+                incorrectArray.push(character[index])
+                rincorrectArray.push(romanized[index])
                 document.getElementById("mistakes").innerText = incorrectArray
             }
         }
     })
+    if (infinite == true) {
+        infiniteRender(correctNo, arrayQuote.length)
+    }
     if (correct) { 
-        const time = stopTimer()
-        const timeNum = time.map(Number)
-        quoteInputElement.blur()
-        if (!timerHidden) {
-            document.getElementById("completed").innerText = `completed in ${time[0]}:${time[1]}.${time[2]}, ` +
-            `${Math.round(kanaAmount/((timeNum[0] * 60 + timeNum[1])/60)*100)/100}kpm`
-        } else {
-            document.getElementById("completed").innerText = "completed"
-        }
-        enterToRestart()
+        completed()
     }
 })
 
+function initiateInfinite() {
+    kanaAmount = 75 // initial amount
+    infinquote.splice(0, infinquote.length) //empty quote
+    infinrquote.splice(0, infinrquote.length)
+}
+
+let infinite = false
+function infiniteRender(correctNo, spanAmount) {
+    if (correctNo == 25) {
+        // first render
+        const correctQuote = quoteDisplayElement.querySelectorAll(".correct")
+        correctQuote.forEach(function(character) {
+            character.style.opacity="0.6"
+        })
+        document.getElementById("testing").innerText = infinrquote.slice(infinrquote.length - 50, infinrquote.length - 25).toString().replaceAll(",", " ")
+    } else if (spanAmount - correctNo == 25) {
+        kanaAmount = 25
+        randomizeKana()
+        renderNewQuote()
+        quoteDisplayElement.scrollTo({top: quoteDisplayElement.scrollHeight, behavior: 'smooth'})
+        const correctQuote = quoteDisplayElement.querySelectorAll(".correct")
+        correctQuote.forEach(function(character) {
+            character.style.opacity="0.6"
+        })
+    }
+}
+
+function completed() {
+    const time = stopTimer()
+    const timeNum = time.map(Number)
+    quoteInputElement.blur()
+    if (!timerHidden) {
+        document.getElementById("completed").innerText = `completed in ${time[0]}:${time[1]}.${time[2]}, ` +
+        `${Math.round(kanaAmount/((timeNum[0] * 60 + timeNum[1])/60)*100)/100}kpm`
+    } else {
+        document.getElementById("completed").innerText = "completed"
+    }
+    document.addEventListener("keyup", restartIfEnter) //keypress makes key be recorded in input regardless of where .focus() is 
+}
+
 function restartIfEnter (e) { // needs to be named function for removeEventListener
-    console.log(e)
+    e.preventDefault() //229 comment
     if (e.key == "Enter") {
         restart()
     }
 }
 
-function enterToRestart() {
-    console.log("enterToRestart")
-    document.addEventListener("keyup", restartIfEnter) //keypress makes key be recorded in input regardless of where .focus() is ??
-}
-
-function renderNewQuote() {
+function clearQuote() {
     quoteDisplayElement.innerHTML = "" // clear out old quote/input
     quoteInputElement.focus()
-    quoteInputElement.value = null 
+    quoteInputElement.value = null
+}
+
+function restart() {
+    clearQuote()
     randomizeKana()
-    quote.forEach(character => {
-        const characterSpan = document.createElement("span")
-        characterSpan.innerText = character
-        characterSpan.classList.add("quote")
-        quoteDisplayElement.appendChild(characterSpan)
+    document.removeEventListener("keyup", restartIfEnter)
+    startTimer()
+    renderNewQuote()
+    document.getElementById("completed").innerText = "" 
+    clearMistakes()  
+}
+
+/* Mistakes */
+const incorrectArray = []
+const rincorrectArray = []
+let includeMistakes = false
+
+function fisherYatesShuffle(array, array2) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        const x = array[i]
+        const y = array2[i]
+        array[i] = array[j]
+        array2[i] = array2[j]
+        array[j] = x
+        array2[j] = y
+    }
+}
+
+function addMistakesToQuote() { // script.js - randomizeKana()
+    quote.push(...incorrectArray)
+    rquote.push(...rincorrectArray)
+    fisherYatesShuffle(quote, rquote)
+}
+
+function clearMistakes() { // script.js - restart()
+    if (document.getElementById("clearMistakes").classList.contains("activeButton")) {
+        incorrectArray.splice(0, incorrectArray.length)
+        rincorrectArray.splice(0, incorrectArray.length)
+        document.getElementById("mistakes").innerText = incorrectArray
+    }
+}
+
+function mistakesListener() {
+    document.getElementById("mistakesContainer").addEventListener("click", function(event) {
+        if (event.target.nodeName === "BUTTON") {
+            if (event.target.id === "includeMistakes") {
+                includeMistakes = !includeMistakes
+            }
+        event.target.classList.toggle("activeButton")
+        } 
     })
 }
 
+/* Settings */
 function displayKanaNumber() {
-    if (kanaAmount == 25) {
+    if (kanaAmount === 25) {
         document.getElementById("Kana25").classList.add("activeButton")
         document.getElementById("Kana50").classList.remove("activeButton")
         document.getElementById("Kana100").classList.remove("activeButton")
-    } else if (kanaAmount == 50) {
+        document.getElementById("KanaInfin").classList.remove("activeButton")
+    } else if (kanaAmount === 50) {
         document.getElementById("Kana25").classList.remove("activeButton")
         document.getElementById("Kana50").classList.add("activeButton")
         document.getElementById("Kana100").classList.remove("activeButton")
-    } else {
+        document.getElementById("KanaInfin").classList.remove("activeButton")
+    } else if (kanaAmount === 100){
         document.getElementById("Kana25").classList.remove("activeButton")
         document.getElementById("Kana50").classList.remove("activeButton")
         document.getElementById("Kana100").classList.add("activeButton")
+        document.getElementById("KanaInfin").classList.remove("activeButton")
+    } else {
+        document.getElementById("Kana25").classList.remove("activeButton")
+        document.getElementById("Kana50").classList.remove("activeButton")
+        document.getElementById("Kana100").classList.remove("activeButton")
+        document.getElementById("KanaInfin").classList.add("activeButton")
     }
 }   
+
+let hiraType = true
+let kataType = false
+let hdakuType = false
+let kdakuType = false
+let hcombType = false
+let kcombType = false
 
 function SetKanaType() { 
     kanaArray.splice(0, kanaArray.length) 
@@ -304,130 +405,72 @@ function SetKanaType() {
         kanaArray.push(kcomb)
         romanizedArray.push(rcomb)
     }  
-    
-    console.log(`kanaArray:${kanaArray}`, kanaArray)
-    console.log(`romanizedArray:${romanizedArray}`, romanizedArray)
 }
 
-const kanaNumber = document.getElementById("kanaNumberContainer") 
-kanaNumber.addEventListener("click", function(event) {
-    if (event.target.nodeName == "BUTTON") {
-        kanaAmount = Number(event.target.id.replace("Kana", ""))
-        displayKanaNumber()
-    }
-})
-
-document.getElementById("kanaTypeContainer").addEventListener("click", function(event) {
-    if (event.target.nodeName == "BUTTON") {
-        if ((event.target.classList.contains("activeButton"))&&(document.querySelectorAll(".kana-type.activeButton").length == 1)){
-            return
-        }
-        event.target.classList.toggle("activeButton")
-        if (event.target.id == "hiraganaType") {
-            hiraType = !hiraType
-        } else if (event.target.id == "katakanaType") {
-            kataType = !kataType
-        } else if (event.target.id == "hdakutenType") {
-            hdakuType = !hdakuType
-        } else if (event.target.id == "kdakutenType") {
-            kdakuType = !kdakuType
-        } else if (event.target.id == "hcombType") {
-            hcombType = !hcombType
-        } else if (event.target.id == "kcombType") {
-            kcombType = !kcombType
-        }
-    } 
-    SetKanaType()
-})
-
-//Timer 
-function startTimer() {
-    if (interval) {
-        clearInterval(interval)
-    }
-    startTime = new Date()
-    interval = setInterval(timerMilli, 10, startTime) // >:(
-}
-
-function timerMilli(startTime) {
-    if (timerHidden) {
-        return
-    }
-    let timeMilli = new Date() - startTime
-    let milliseconds = timeMilli % 1000
-    let seconds = Math.floor(timeMilli/1000)%60
-    let minutes = Math.floor((timeMilli/60000))
-    if (milliseconds.toString.length < 3){
-        milliseconds = "0".repeat(3 - milliseconds.toString().length) + milliseconds
-    }
-    if (seconds.toString.length < 2){
-        seconds = "0".repeat(2 - seconds.toString().length) + seconds
-    }
-    currentTime = `${minutes}:${seconds}.${milliseconds}`
-    timerElement.innerText = currentTime
-}
-
-function stopTimer() {
-    clearInterval(interval)
-    return timerElement.innerText.replace(":", " ").replace(".", " ").split(" ")
-}
-
-function restart() {
-    document.removeEventListener("keyup", restartIfEnter)
-    startTimer()
-    renderNewQuote()
-    document.getElementById("completed").innerText = "" 
-    if (document.getElementById("clearMistakes").classList.contains("activeButton")) {
-        incorrectArray.splice(0, incorrectArray.length)
-        rincorrectArray.splice(0, incorrectArray.length)
-        document.getElementById("mistakes").innerText = incorrectArray
-    }
-    
-        
-}
-document.getElementById("start").addEventListener("click", ()=> {
-        restart()
-})
-
-hideTimerButton.addEventListener("click", function() {
-    if (hideTimerButton.classList.contains("activeButton")) {
-        timerHidden = false
-        timerElement.innerText = currentTime
-        hideTimerButton.classList.toggle("activeButton")
-        timerElement.style.transform  = "none"
-        hideTimerButton.innerText = "hide timer"
-    } else {
-        timerHidden = true
-        timerElement.innerText = ":)"
-        hideTimerButton.classList.toggle("activeButton")
-        timerElement.style.transform  = "rotate(90deg)"
-        hideTimerButton.innerText = "show timer"
-    }
-})
-
-//Mistakes
-document.getElementById("mistakesContainer").addEventListener("click", function(event) {
-    if (event.target.nodeName == "BUTTON") {
-        if (event.target.id == "includeMistakes") {
-            event.target.classList.toggle("activeButton")
-            includeMistakes = !includeMistakes
-        } else if (event.target.id == "clearMistakes") {
-            if (!(event.target.classList.contains("activeButton"))) {
-                event.target.classList.toggle("activeButton")
-                event.target.innerText = "autoclear"
-                incorrectArray.splice(0, incorrectArray.length)
-                rincorrectArray.splice(0, incorrectArray.length)
-                document.getElementById("mistakes").innerText = incorrectArray
+function settingListeners() {
+    document.getElementById("kanaNumberContainer").addEventListener("click", function(event) {
+        if (event.target.nodeName === "BUTTON") {
+            kanaAmount = Number(event.target.id.replace("Kana", ""))
+            if (isNaN(kanaAmount)) {
+                infinite = true
             } else {
-                event.target.classList.toggle("activeButton")
-                event.target.innerText = "clear"
+                infinite = false
             }
-            
+            displayKanaNumber()
         }
-    } 
-})
+    })
+    
+    document.getElementById("kanaTypeContainer").addEventListener("click", function(event) {
+        if (event.target.nodeName === "BUTTON") {
+            if ((event.target.classList.contains("activeButton"))&&(document.querySelectorAll(".kana-type.activeButton").length == 1)){
+                return
+            }
+            event.target.classList.toggle("activeButton")
+            if (event.target.id === "hiraganaType") {
+                hiraType = !hiraType
+            } else if (event.target.id === "katakanaType") {
+                kataType = !kataType
+            } else if (event.target.id === "hdakutenType") {
+                hdakuType = !hdakuType
+            } else if (event.target.id === "kdakutenType") {
+                kdakuType = !kdakuType
+            } else if (event.target.id === "hcombType") {
+                hcombType = !hcombType
+            } else if (event.target.id === "kcombType") {
+                kcombType = !kcombType
+            }
+        } 
+        SetKanaType()
+    })
+}
+
+/* Modal */
+const modal = document.getElementById("modal")
+const openModalButton = document.getElementById("openModal") 
+const closeModalButton = document.getElementById("closeModal")
+const overlay = document.getElementById("overlay")
+
+function openModal() {
+    modal.classList.add("active")
+    overlay.classList.add("active")
+    openModalButton.classList.add("activeButton")
+}
+
+function closeModal() {
+    modal.classList.remove("active")
+    overlay.classList.remove("active")
+    openModalButton.classList.remove("activeButton")
+}
+
+function modalListeners() {
+    openModalButton.addEventListener("click", openModal)
+    closeModalButton.addEventListener("click", closeModal)
+    overlay.addEventListener("click",  closeModal)
+}
 
 //Other
+let altStyle = true
+
 document.getElementById("alternateStyle").addEventListener("click", function() {
     document.getElementById("alternateStyle").classList.toggle("activeButton")
     altStyle = !altStyle
@@ -447,6 +490,24 @@ function style() {
     }
 }
 
-SetKanaType()
-displayKanaNumber()
-style()
+function initializeListeners() {
+    document.getElementById("start").addEventListener("click", ()=> {
+        if (infinite == true) {
+            initiateInfinite()
+        }
+        restart()
+    })
+    hideTimerListener()
+    mistakesListener()
+    settingListeners()
+    modalListeners()
+}
+
+function main () {
+    initializeListeners()
+    SetKanaType()
+    displayKanaNumber()
+    style()
+}
+
+main()

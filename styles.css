@@ -20,6 +20,7 @@ body {
     padding: 1rem;
 
 }
+/* TIMER */
 
 #timerContainer {
     position: absolute;
@@ -28,25 +29,60 @@ body {
     text-align: center;
 }
 
-#quoteContainer {
-    width: 700px;
-}
-
 .timer {
     font-size: 2rem;
     color: black;
     height: 50px;
 }
 
+/* QUOTE */
+
+#quoteContainer {
+    width: 700px;
+}
+
+#quoteDisplay {
+    font-size: 1.55rem;
+    margin-bottom: 1rem;
+    margin-left: calc(1rem + 2px); /* quote-input left padding + border */
+    margin-right: calc(1rem + 2px);
+    max-height: 150px;
+    overflow-y: hidden;
+}
+
+#quoteInput {
+    background-color: transparent;
+    border: 2px solid grey;
+    outline: none;
+    width: 100%;
+    height: 3rem;
+    margin: auto;
+    resize: none;
+    padding: .5rem 1rem;
+    font-size: 1rem;
+    border-radius: .5rem;
+}
+
+#quoteInput:focus::placeholder {
+    color: transparent;
+  }
+ 
+#quoteInput:focus {
+    border-color: turquoise;
+}
+
+/* BUTTON */
+
 .button {
-    position: relative;
     color: honeydew;
     background-color: tomato;
     font-family: 'Courier New', Courier, monospace;
-    border-radius: .5rem;
     cursor: pointer;
-    box-shadow: 3px 3px black;
     margin: 0.3rem 0rem;
+    /* with .button:active */
+    position: relative;
+    box-shadow: 3px 3px black;
+    border-radius: .5rem;
 }
 
  button:hover{
@@ -60,34 +96,7 @@ body {
     background-color: rgb(171, 67, 48);
 }
 
-.quote-display {
-    font-size: 1.55rem;
-    margin-bottom: 1rem;
-    margin-left: calc(1rem + 2px); /* quote-input left padding + border */
-    margin-right: calc(1rem + 2px);
-}
-
-.quote-input {
-    background-color: transparent;
-    border: 2px solid grey;
-    outline: none;
-    width: 100%;
-    height: 3rem;
-    margin: auto;
-    resize: none;
-    padding: .5rem 1rem;
-    font-size: 1rem;
-    border-radius: .5rem;
-}
-
-.quote-input:focus::placeholder {
-    color: transparent;
-  }
- 
-/* needed for .quote-input {outline: none} */
-.quote-input:focus {
-    border-color: turquoise;
-}
+/* SPAN */
 
 .correct {
     color: green;
@@ -103,7 +112,7 @@ body {
     font-weight: bold;
 }
 
-.testing {
+#testing {
     position: absolute;
     bottom:50px;
     user-select: all;
@@ -115,7 +124,9 @@ body {
     text-align: center;
 }
 
-.modal {
+/* MODAL */
+
+#modal {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -129,11 +140,11 @@ body {
     max-width: 80%;
 }
 
-.modal.active{
+#modal.active{
     transform: translate(-50%, -50%) scale(1);
 }
 
-.modal-header {
+#modalHeader {
     padding: 10px 15px;
     display: flex;
     justify-content: space-between;
@@ -141,7 +152,7 @@ body {
     border-bottom: 1px solid black;
 }
 
-.modal-title {
+#modalTitle {
     font-size: 1.25rem;
     font-weight: bold;
 }
@@ -150,10 +161,9 @@ body {
     position: absolute;
     top: 10px;
     left: 10px;
-    
 }
 
-.close-modal {
+#closeModal {
     cursor: pointer;
     border: none;
     outline: none;
